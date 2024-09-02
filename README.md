@@ -73,11 +73,6 @@ We are using MySQL as our database. The main objective of this project is to use
   * JWT_SECRET
   * JWT_EXPIRE
   * SESSION_SECRET
-* For setting up mail-gun Go to official doc of mail-gun. Sign up and replace your credentials here.
-  * URL
-  * RESET_PASSWORD_KEY
-  * DOMAIN_NAME
-  * MAILGUN_API_KEY
 * Create the database using following query in mysql : `CREATE DATABASE databasename;`
 * Create tables using the sql script file in `databse/cms.sql`;
 * To seed data in the database run to file in `seed` folder
