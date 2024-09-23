@@ -2,9 +2,6 @@ const mysql = require('mysql');
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcryptjs');
 const uuidv4 = require('uuid').v4;
-// const mailgun = require('mailgun-js');
-// const DOMAIN = process.env.DOMAIN_NAME;
-// const mg = mailgun({ apiKey: process.env.MAILGUN_API_KEY, domain: DOMAIN });
 
 const db = mysql.createConnection({
   host: process.env.DB_HOST,
@@ -14,10 +11,10 @@ const db = mysql.createConnection({
   database: 'cumsdbms',
 });
 
-// Students limit per section
+
 const SECTION_LIMIT = 20;
 
-// Database query promises
+
 const zeroParamPromise = (sql) => {
   return new Promise((resolve, reject) => {
     db.query(sql, (err, results) => {
@@ -36,7 +33,7 @@ const queryParamPromise = (sql, queryParam) => {
   });
 };
 
-// Hash password
+
 const hashing = (password) => {
   return new Promise((resolve, reject) => {
     bcrypt.hash(password, 8, function (err, hashedPassword) {
@@ -46,8 +43,7 @@ const hashing = (password) => {
   });
 };
 
-// 1. ADMIN
-// 1.1 Login
+
 exports.getLogin = (req, res, next) => {
   res.render('Admin/login');
 };
@@ -75,8 +71,7 @@ exports.postLogin = async (req, res, next) => {
   }
 };
 
-// 1.2 Register
-// ADMIN REGISTER ==> To be commented
+
 exports.getRegister = (req, res, next) => {
   res.render('Admin/register');
 };
@@ -108,21 +103,19 @@ exports.postRegister = async (req, res, next) => {
   }
 };
 
-// 1.3 Dashboard
 exports.getDashboard = async (req, res, next) => {
   const sql = 'SELECT * FROM admin WHERE admin_id = ?';
   const user = (await queryParamPromise(sql, [req.user]))[0];
   res.render('Admin/dashboard', { user: user, page_name: 'overview' });
 };
 
-// 1.4 Logout
+
 exports.getLogout = (req, res, next) => {
   res.cookie('jwt', '', { maxAge: 1 });
   req.flash('success_msg', 'You are logged out');
   res.redirect('/admin/login');
 };
 
-// 1.5 Profile
 exports.getProfile = async (req, res, next) => {
   const sql = 'SELECT * FROM admin WHERE admin_id = ?';
   const user = (await queryParamPromise(sql, [req.user]))[0];
@@ -142,114 +135,7 @@ exports.getProfile = async (req, res, next) => {
   });
 };
 
-// // 1.6 Forgot Password
-// exports.getForgotPassword = (req, res, next) => {
-//   res.render('Admin/forgotPassword');
-// };
 
-// exports.forgotPassword = async (req, res, next) => {
-//   const { email } = req.body;
-//   if (!email) {
-//     return res.status(400).render('Admin/forgotPassword');
-//   }
-
-//   let errors = [];
-
-//   const sql1 = 'SELECT * from admin WHERE email = ?';
-//   const results = await queryParamPromise(sql1, [email]);
-//   if (!results || results.length === 0) {
-//     errors.push({ msg: 'That email is not registered!' });
-//     res.status(401).render('Admin/forgotPassword', {
-//       errors,
-//     });
-//   }
-
-//   const token = jwt.sign(
-//     { _id: results[0].admin_id },
-//     process.env.RESET_PASSWORD_KEY,
-//     { expiresIn: '20m' }
-//   );
-
-//   const data = {
-//     from: 'noreplyCMS@mail.com',
-//     to: email,
-//     subject: 'Reset Password Link',
-//     html: `<h2>Please click on given link to reset your password</h2>
-//                 <p><a href="${process.env.URL}/admin/resetpassword/${token}">Reset Password</a></p>
-//                 <hr>
-//                 <p><b>The link will expire in 20m!</b></p>
-//               `,
-//   };
-
-//   const sql2 = 'UPDATE admin SET resetLink = ? WHERE email = ?';
-//   db.query(sql2, [token, email], (err, success) => {
-//     if (err) {
-//       errors.push({ msg: 'Error In ResetLink' });
-//       res.render('Admin/forgotPassword', { errors });
-//     } else {
-//       mg.messages().send(data, (err, body) => {
-//         if (err) throw err;
-//         else {
-//           req.flash('success_msg', 'Reset Link Sent Successfully!');
-//           res.redirect('/admin/forgot-password');
-//         }
-//       });
-//     }
-//   });
-// };
-
-// // 1.7 Reset Password
-// exports.getResetPassword = (req, res, next) => {
-//   const resetLink = req.params.id;
-//   res.render('Admin/resetPassword', { resetLink });
-// };
-
-// exports.resetPassword = (req, res, next) => {
-//   const { resetLink, password, confirmPass } = req.body;
-
-//   let errors = [];
-
-//   if (password !== confirmPass) {
-//     req.flash('error_msg', 'Passwords do not match!');
-//     res.redirect(`/admin/resetpassword/${resetLink}`);
-//   } else {
-//     if (resetLink) {
-//       jwt.verify(resetLink, process.env.RESET_PASSWORD_KEY, (err, data) => {
-//         if (err) {
-//           errors.push({ msg: 'Token Expired!' });
-//           res.render('Admin/resetPassword', { errors });
-//         } else {
-//           const sql1 = 'SELECT * FROM admin WHERE resetLink = ?';
-//           db.query(sql1, [resetLink], async (err, results) => {
-//             if (err || results.length === 0) {
-//               throw err;
-//             } else {
-//               let hashed = await bcrypt.hash(password, 8);
-
-//               const sql2 = 'UPDATE admin SET password = ? WHERE resetLink = ?';
-//               db.query(sql2, [hashed, resetLink], (errorData, retData) => {
-//                 if (errorData) {
-//                   throw errorData;
-//                 } else {
-//                   req.flash(
-//                     'success_msg',
-//                     'Password Changed Successfully! Login Now'
-//                   );
-//                   res.redirect('/admin/login');
-//                 }
-//               });
-//             }
-//           });
-//         }
-//       });
-//     } else {
-//       errors.push({ msg: 'Authentication Error' });
-//       res.render('Admin/resetPassword', { errors });
-//     }
-//   }
-// };
-
-// 1.8 Settings
 exports.getInfoSettings = async (req, res, next) => {
   const sql = 'SELECT * FROM admin WHERE admin_id = ?';
   const user = (await queryParamPromise(sql, [req.user]))[0];
@@ -300,8 +186,6 @@ exports.postPasswordSettings = async (req, res, next) => {
   }
 };
 
-// 2. STAFFS
-// 2.1 Add staff
 exports.getAddStaff = async (req, res, next) => {
   const sql = 'SELECT dept_id from department';
   const results = await zeroParamPromise(sql);
@@ -358,7 +242,7 @@ exports.postAddStaff = async (req, res, next) => {
     res.redirect('/admin/getAllStaffs');
   }
 };
-// 2.2 Get staffs on query
+
 exports.getRelevantStaff = async (req, res, next) => {
   const sql = 'SELECT dept_id from department';
   const results = await zeroParamPromise(sql);
@@ -415,12 +299,10 @@ exports.postRelevantStaff = async (req, res, next) => {
         page_name: 'staff',
       });
     } else {
-      // section for the given department does not exist
       req.flash('error', 'Section for the given department does not exist');
       res.redirect('/admin/getStaff');
     }
   } else if (department !== 'None') {
-    // All teachers from particular department
     const sql = 'select * from staff where dept_id = ?';
     const results = await queryParamPromise(sql, [department]);
     return res.render('Admin/Staff/getStaff', {
@@ -432,14 +314,14 @@ exports.postRelevantStaff = async (req, res, next) => {
   }
 };
 
-// 2.3 Get all staffs
+
 exports.getAllStaff = async (req, res, next) => {
   const sql = 'SELECT * FROM staff';
   const results = await zeroParamPromise(sql);
   res.render('Admin/Staff/getStaff', { data: results, page_name: 'staff' });
 };
 
-// 2.4 Modify existing staffs
+
 exports.getStaffSettings = async (req, res, next) => {
   const staffEmail = req.params.id;
   const sql1 = 'SELECT * FROM staff WHERE email = ?';
@@ -491,8 +373,6 @@ exports.postStaffSettings = async (req, res, next) => {
   res.redirect('/admin/getStaff');
 };
 
-// 3. STUDENTS
-// 3.1 Add student
 exports.getAddStudent = async (req, res, next) => {
   const sql = 'SELECT * from department';
   const results = await zeroParamPromise(sql);
@@ -520,7 +400,6 @@ exports.postAddStudent = async (req, res, next) => {
   const password = dob.toString().split('-').join('');
   const hashedPassword = await hashing(password);
   
-  // Corrected SQL query with GROUP BY clause
   const sql1 = `
     SELECT COUNT(*) AS count, section 
     FROM student 
@@ -537,7 +416,7 @@ exports.postAddStudent = async (req, res, next) => {
 
   let section = 1; // Default section
 
-  // Check if results is not empty
+
   if (results && results.length > 0 && results[0].count !== 0) {
     if (results[0].count === SECTION_LIMIT) {
       section = results[0].section + 1;
@@ -565,7 +444,7 @@ exports.postAddStudent = async (req, res, next) => {
 };
 
 
-// 3.2 Get students on query
+
 exports.getRelevantStudent = async (req, res, next) => {
   const sql = 'SELECT * from department';
   const results = await zeroParamPromise(sql);
@@ -612,7 +491,7 @@ exports.postRelevantStudent = async (req, res, next) => {
   }
 };
 
-// 3.3 Get all students
+
 exports.getAllStudent = async (req, res, next) => {
   const sql = 'SELECT * from student';
   const results = await zeroParamPromise(sql);
@@ -622,7 +501,7 @@ exports.getAllStudent = async (req, res, next) => {
   });
 };
 
-// 3.4 Modify existing students
+
 exports.getStudentSettings = async (req, res, next) => {
   const studentEmail = req.params.id;
   const sql1 = 'SELECT * FROM student WHERE email = ?';
@@ -685,9 +564,7 @@ exports.postStudentSettings = async (req, res, next) => {
   res.redirect('/admin/getAllStudents');
 };
 
-// 4. CLASSES
 
-// 4.1 Select Class
 exports.getClass = async (req, res, next) => {
   const sql = 'SELECT * FROM class';
   const results = await zeroParamPromise(sql);
@@ -708,7 +585,6 @@ exports.getClass = async (req, res, next) => {
   });
 };
 
-// 4.2 Add class
 exports.getAddClass = async (req, res, next) => {
   const results = await zeroParamPromise('SELECT c_id from course');
   let courses = [];
@@ -754,7 +630,7 @@ exports.postAddClass = async (req, res, next) => {
   res.redirect('/admin/getClass');
 };
 
-// 4.3 Modify existing classes
+
 exports.getClassSettings = async (req, res, next) => {
   const classId = req.params.id;
   const sql1 = 'SELECT * from class WHERE class_id = ?';
@@ -783,8 +659,7 @@ exports.postClassSettings = async (req, res, next) => {
   res.redirect('/admin/getClass');
 };
 
-// 5. DEPARTMENTS
-// 5.1 Select department
+
 exports.getDept = async (req, res, next) => {
   const results = await zeroParamPromise('SELECT * FROM department');
   res.render('Admin/Department/getDept', {
@@ -793,7 +668,6 @@ exports.getDept = async (req, res, next) => {
   });
 };
 
-// 5.2 Add department
 exports.getAddDept = (req, res, next) => {
   res.render('Admin/Department/addDept', { page_name: 'depts' });
 };
@@ -814,7 +688,6 @@ exports.postAddDept = async (req, res, next) => {
   }
 };
 
-// 5.3 Modify existing department
 exports.getDeptSettings = async (req, res, next) => {
   const deptId = req.params.id;
   const sql1 = 'SELECT * FROM department WHERE dept_id = ?';
@@ -834,8 +707,7 @@ exports.postDeptSettings = async (req, res, next) => {
   res.redirect('/admin/getDept');
 };
 
-// 6. COURSE
-// 6.1 Get all courses
+
 exports.getAllCourse = async (req, res, next) => {
   const results = await zeroParamPromise('SELECT * FROM course');
   res.render('Admin/Course/getCourse', {
@@ -844,7 +716,7 @@ exports.getAllCourse = async (req, res, next) => {
   });
 };
 
-// 6.2 Get courses on query
+
 exports.getRelevantCourse = async (req, res, next) => {
   const results = await zeroParamPromise('SELECT * from department');
   let departments = [];
@@ -890,7 +762,7 @@ exports.postRelevantCourse = async (req, res, next) => {
   }
 };
 
-// 6.3 Add course
+
 exports.getAddCourse = async (req, res, next) => {
   const results = await zeroParamPromise('SELECT * from department');
   let departments = [];
@@ -921,7 +793,7 @@ exports.postAddCourse = async (req, res, next) => {
   return res.redirect('/admin/getAllCourses');
 };
 
-// 6.4 Modify existing courses
+
 exports.getCourseSettings = async (req, res, next) => {
   const cId = req.params.id;
   const sql1 = 'SELECT * FROM course WHERE c_id = ?';

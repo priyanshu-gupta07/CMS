@@ -8,7 +8,6 @@ router.get('/index', homeController.getIndex);
 
 router.get('/unauthorized', homeController.getError403);
 
-// should be in last
 router.use('/', homeController.getError404);
 
 module.exports = router;

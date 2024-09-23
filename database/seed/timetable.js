@@ -35,8 +35,6 @@ const queryParamPromise = (sql, queryParam) => {
 };
 const startTime = ['10:00:00', '11:00:00', '12:00:00', '13:00:00'];
 const endTime = ['11:00:00', '12:00:00', '13:00:00', '14:00:00'];
-// Currently implemented only for 1st semester, 2021 joining year students of all departments
-// Assumed only one subject per teacher but can be generalized with an extra 2D array
 async function generateTimeTable() {
   try {
     await new Promise((r) => setTimeout(r, 2000)); // wait for mysql connection
@@ -49,11 +47,11 @@ async function generateTimeTable() {
     for (let i = 0; i < departmentsData.length; ++i) {
       departmentsData[i] = departmentsData[i].dept_id;
     }
-    // time table for all departments and 3 sections each
+
     const timeTable = new Array(departmentsData.length * 3);
     for (let day = 0; day < 5; ++day) {
       console.log(day);
-      // Four time slots for each class
+
       for (let i = 0; i < timeTable.length; ++i) {
         timeTable[i] = new Array(4);
       }

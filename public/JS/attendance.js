@@ -1,5 +1,4 @@
 $(document).ready(function () {
-  // Set default value of calendar as today's date
   const today = new Date();
   const year = today.getFullYear().toString();
   let month = (today.getMonth() + 1).toString();
@@ -13,7 +12,7 @@ $(document).ready(function () {
   let date = year + '-' + month + '-' + day;
   $('#date-input').val(date);
 
-  // Date onChange handle
+
   $('#date-input').change(function () {
     const attendance_date = $('#date-input').val();
     $("input[type='checkbox']").each(function () {
@@ -21,7 +20,7 @@ $(document).ready(function () {
     });
   });
 
-  //   Mark all present button
+
   $('#mark-all-present').click(function () {
     $("input[type='checkbox']").each(function () {
       const s_id = $(this).attr('id');
@@ -29,7 +28,7 @@ $(document).ready(function () {
       $(this).prop('checked', true);
     });
   });
-  //   Mark all absent button
+
   $('#mark-all-absent').click(function () {
     $("input[type='checkbox']").each(function () {
       const s_id = $(this).attr('id');
@@ -38,7 +37,7 @@ $(document).ready(function () {
     });
   });
 
-  // onClick checkbox toggle
+
   $("input[type='checkbox']").click(function () {
     const s_id = $(this).attr('id');
     let isPresent = $(`input[name=${s_id}]`).val();
