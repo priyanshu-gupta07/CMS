@@ -260,3 +260,72 @@ exports.getLogout = (req, res, next) => {
   res.redirect('/student/login');
 };
 
+exports.getFeedback = async (req, res, next) => {
+  console.log("here");
+  try {
+    const sql1 = 'SELECT * FROM student WHERE s_id = ?';
+    const studentData = (await queryParamPromise(sql1, [req.user]))[0];
+
+    // Ensure that studentData has values
+    if (!studentData) {
+      return res.status(404).send('Student not found');
+    }
+
+    const email = studentData.email;
+    const department = studentData.dept_id;
+
+    // Render the feedback page and pass the email and department
+    console.log(email);
+    console.log(department);
+    res.render('Student/feedback', {
+      email,
+      department,
+    });
+  } catch (err) {
+    console.error(err);
+    res.status(500).send('Server error');
+  }
+};
+
+
+
+exports.postFeedback = (req, res, next) => {
+  console.log("here");
+  try {
+    const { st_id, course_id, feedback_text, rating } = req.body;
+    let errors = [];
+
+    // Basic validation for required fields
+    if (!st_id || !course_id || !feedback_text || !rating) {
+      errors.push({ msg: 'Please enter all required fields' });
+      return res.status(400).render('Student/feedback', { errors });
+    }
+
+    // Check that the rating is within the valid range
+    if (rating < 1 || rating > 5) {
+      errors.push({ msg: 'Rating must be between 1 and 5' });
+      return res.status(400).render('Student/feedback', { errors });
+    }
+
+    // SQL query to insert feedback into the database
+    let sqlInsert = 'INSERT INTO feedback_form (feedback_id, st_id, course_id, feedback_text, rating) VALUES (?, ?, ?, ?, ?)';
+    const feedbackId = `fb_${Date.now()}`; // Generate a unique feedback ID
+
+    db.query(
+      sqlInsert,
+      [feedbackId, st_id, course_id, feedback_text, rating],
+      (err, results) => {
+        if (err) {
+          console.error(err);
+          return res.status(500).send('Server error');
+        }
+        // Redirect or respond upon successful submission
+        res.redirect('/student/feedbacksuccess');
+      }
+    );
+  } catch (err) {
+    console.error(err);
+    res.status(500).send('Server error');
+  }
+};
+

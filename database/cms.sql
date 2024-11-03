@@ -112,6 +112,17 @@ CREATE TABLE IF NOT EXISTS `time_table` (
 	PRIMARY KEY (`c_id`,`section`,`day`)
 );
 
+CREATE TABLE IF NOT EXISTS `feedback_form` (
+    `feedback_id` VARCHAR(100) NOT NULL,
+    `st_id` VARCHAR(36) NOT NULL,
+    `course_id` VARCHAR(100) NOT NULL,
+    `feedback_text` TEXT NOT NULL,
+    `rating` INT CHECK (`rating` BETWEEN 1 AND 5),
+    `submitted_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    PRIMARY KEY (`feedback_id`)
+);
+
+
 ALTER TABLE `course` ADD CONSTRAINT `course_fk0` FOREIGN KEY (`dept_id`) REFERENCES `department`(`dept_id`) on update cascade on delete restrict;
 
 ALTER TABLE `student` ADD CONSTRAINT `student_fk0` FOREIGN KEY (`dept_id`) REFERENCES `department`(`dept_id`) on update cascade on delete restrict;

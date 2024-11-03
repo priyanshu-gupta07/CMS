@@ -17,5 +17,11 @@ router.post('/selectAttendance', requireAuth, controller.postSelectAttendance);
 router.get('/timetable', requireAuth, controller.getTimeTable);
 
 router.get('/logout', requireAuth, controller.getLogout);
+router.get('/feedback', requireAuth, controller.getFeedback);
+router.post('/feedback',requireAuth,controller.postFeedback);
+router.get('/feedbacksuccess',requireAuth, (req, res) => {
+    res.render('Student/feedbacksuccess');
+});  
+
 
 module.exports = router;
