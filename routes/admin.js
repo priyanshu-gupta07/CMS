@@ -45,7 +45,7 @@ router.post('/addStudent', requireAuth, controller.postAddStudent);
 
 router.get('/getStudent', requireAuth, controller.getRelevantStudent);
 router.post('/getStudent', requireAuth, controller.postRelevantStudent);
-s
+
 router.get('/getAllStudents', requireAuth, controller.getAllStudent);
 
 router.get('/settings/student/:id', requireAuth, controller.getStudentSettings);

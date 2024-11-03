@@ -17,7 +17,7 @@ db.connect((err) => {
   }
   console.log('Mysql Connected');
 });
-// Database query promises
+
 const zeroParamPromise = (sql) => {
   return new Promise((resolve, reject) => {
     db.query(sql, (err, results) => {
@@ -6425,17 +6425,17 @@ const reset = async () => {
     await zeroParamPromise('SET FOREIGN_KEY_CHECKS = 1');
 
     // 1.Add Admin
-    const hashedPassword = await bcrypt.hash('123456', 8);
+    const hashedPassword = await bcrypt.hash('Password', 8);
     await queryParamPromise('insert into admin set ?', {
       admin_id: uuidv4(),
-      name: 'Vishal Jha',
-      email: 'vishaljha@gmail.com',
+      name: 'Priyanshu Gupta',
+      email: 'guptapiyush.0707@gmail.com',
       password: hashedPassword,
     });
     await queryParamPromise('insert into admin set ?', {
       admin_id: uuidv4(),
-      name: 'Ritik Singla',
-      email: 'ritiksingla@gmail.com',
+      name: 'Piyush Gupta',
+      email: 'guptapriyanshu.0718@gmail.com',
       password: hashedPassword,
     });
     console.log('admin added');

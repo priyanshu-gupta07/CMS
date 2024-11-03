@@ -1,6 +1,8 @@
 const mysql = require('mysql');
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcryptjs');
+const dotenv= require("dotenv")
+dotenv.config();
 
 const db = mysql.createConnection({
   host: process.env.DB_HOST,
@@ -53,6 +55,7 @@ exports.postLogin = (req, res, next) => {
         res.status(401).render('Student/login', { errors });
       } else {
         const user = results[0];
+        console.log(process.env.JWT_EXPIRE);
         const token = jwt.sign({ id: user.s_id }, process.env.JWT_SECRET, {
           expiresIn: process.env.JWT_EXPIRE,
         });

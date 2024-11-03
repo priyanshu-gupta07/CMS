@@ -1,5 +1,6 @@
 const mysql = require('mysql');
-
+const dotenv = require('dotenv');
+dotenv.config();
 module.exports = class Mysql {
   static connect() {
 

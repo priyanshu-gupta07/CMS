@@ -1,5 +1,7 @@
 const jwt = require('jsonwebtoken');
 const mysql = require('mysql');
+const dotenv = require('dotenv');
+dotenv.config();
 
 const db = mysql.createConnection({
   host: process.env.DB_HOST,
@@ -22,8 +24,10 @@ const selectID = (id) => {
 const requireAuth = (req, res, next) => {
   const token = req.cookies.jwt;
   if (token) {
+    console.log('Token:', token);
     jwt.verify(token, process.env.JWT_SECRET, async (err, result) => {
       if (err) {
+        console.log('Error:', err);
         req.flash(
           'error_msg',
           'You need to login as ADMIN in order to view that source!'

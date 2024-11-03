@@ -2,6 +2,8 @@ const mysql = require('mysql');
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcryptjs');
 const uuidv4 = require('uuid').v4;
+const dotenv = require('dotenv');
+dotenv.config();
 
 const db = mysql.createConnection({
   host: process.env.DB_HOST,
@@ -60,6 +62,7 @@ exports.postLogin = async (req, res, next) => {
     errors.push({ msg: 'Email or Password is Incorrect' });
     res.status(401).render('Admin/login', { errors });
   } else {
+    console.log(process.env.JWT_EXPIRE);
     const token = jwt.sign({ id: users[0].admin_id }, process.env.JWT_SECRET, {
       expiresIn: process.env.JWT_EXPIRE,
     });

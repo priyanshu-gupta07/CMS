@@ -1,6 +1,8 @@
 const mysql = require('mysql');
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcryptjs');
+const dotenv= require("dotenv")
+dotenv.config();
 
 
 const db = mysql.createConnection({
